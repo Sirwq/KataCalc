@@ -1,9 +1,11 @@
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) throws IOException {
-        calc(readLine());
+        System.out.println(calc(readLine()));
     }
 
     public static String calc(String userInput) throws IOException {
@@ -16,9 +18,6 @@ public class Main {
             }
         }
 
-        if (op == 0){
-            throw new IOException("Оператор не найден");
-        }
 
         String [] elements = userInput.split(" ");
 
@@ -35,9 +34,6 @@ public class Main {
         boolean roman1 = isRoman(elements[2]);
         boolean decimal1 = isDecimal(elements[2]);
 
-        System.out.println(decimal);
-        System.out.println(decimal1);
-
         if (roman & decimal || roman1 & decimal1) {
             throw new IOException("Неверный ввод");
         }
@@ -46,22 +42,28 @@ public class Main {
             throw new IOException("т.к. используются одновременно разные системы счисления");
         }
 
+        if (op == 0){
+            throw new IOException("Оператор не найден");
+        }
+
         int num1 = 0;
         int num2 = 0;
 
         if (decimal) {
-            System.out.println("YAY");
-            num1 = toInteger(elements[0]);
-            num2 = toInteger(elements[2]);
+            num1 = strToInt(elements[0]);
+            num2 = strToInt(elements[2]);
         }
 
+        if (roman) {
+            num1 = toRoman(elements[0]);
+            System.out.println("Первый - " + num1);
+            num2 = toRoman(elements[2]);
+            System.out.println("Второй - " + num2);
+        }
 
-        num1 = toDecimal(elements[0]);
-        System.out.println(num1);
-        num2 = toDecimal(elements[2]);
-        System.out.println(num2);
-
-
+        if ( (num1 > 10 || num2 > 10 || num1 < 1 || num2 < 1)) {
+            throw new IOException("На вход поданы неподходящие велечины < 0 || > 10");
+        }
 
 
         int result = 0;
@@ -85,57 +87,76 @@ public class Main {
         return line;
     }
 
-    static int toInteger(String num){
+    static int strToInt(String num){
         return (Integer.parseInt(num));
     }
 
-    static boolean isRoman(String num){
+    static boolean isRoman(String num) {
+        boolean result = false;
         Roman[] roman = Roman.values();
-        for (Roman elem: roman) {
-            if (num.indexOf(elem.getValue()) != -1){
-                return true;
+
+        for (int i = 0; i < num.length(); i++) {
+            for (Roman c :
+                    roman) {
+                if (num.charAt(i) == c.getChar()) {
+                    result = true;
+                    break;
+                }
             }
-        } return false;
+            if (result) break;
+        }
+        return result;
     }
 
     static boolean isDecimal(String num) {
-        int [] decimal = {0,1,2,3,4,5,6,7,8,9};
+        boolean result = false;
+        char[] numbers = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
 
-        for (int elem: decimal) {
-            if(num.indexOf(elem) != -1) {
-                System.out.println("NICE");
-                return true;
+        for (int i = 0; i < num.length(); i++) {
+            for (char c :
+                    numbers) {
+                if (num.charAt(i) == c) {
+                    result = true;
+                    break;
+                }
             }
-        } return false;
+            if (result) break;
+        }
+        return result;
     }
 
-    static int toDecimal(String num) {
-        Roman[] roman = Roman.values();
-        System.out.println("Hello");
+    static int toRoman(String num) {
+        HashMap<Character,Integer> roman_table = new HashMap<Character,Integer>();
+
+        roman_table.put('I',1);
+        roman_table.put('V',5);
+        roman_table.put('X',10);
 
         int result = 0;
-        // I , V , X --> 73, 86, 88
-        if (num.codePointAt(0) > num.codePointAt(num.length() - 1) || num.codePointAt(0) == num.codePointAt(num.length() - 1)) {
-            for(int i = 0; i <= (num.length() - 1); i++) {
-                for (Roman elem: roman){
-                    if (num.charAt(i) == elem.ordinal()){
-                        System.out.println(num.charAt(i));
-                        result += elem.getValue();
-                    }
+        int length = num.length();
+
+        if (length == 1 && roman_table.containsKey(num.charAt(0))) {
+            result = roman_table.get(num.charAt(0));
+        }
+
+        // I - 73, V - 86, X - 88
+        else if (num.codePointAt(0) >= num.codePointAt(length - 1)) {
+            for (int i = 0; i < length; i++) {
+                if(roman_table.containsKey(num.charAt(i))) {
+                    result += roman_table.get(num.charAt(i));
                 }
             }
-        } else {
-            char c = num.charAt(num.length() - 1);
-            for (Roman elem: roman){
-                if(c == elem.ordinal()){
-                    result = elem.getValue();
-                }
+        }
+
+        else {
+
+            if(roman_table.containsKey(num.charAt(length - 1))){
+                result = roman_table.get(num.charAt(length - 1));
             }
-            for (int i = 0; i < num.length() - 2; i++){
-                for (Roman elem: roman){
-                    if (num.charAt(i) == elem.ordinal()){
-                        result -= elem.getValue();
-                    }
+
+            for(int i = 0; i < length - 1; i++){
+                if(roman_table.containsKey(num.charAt(i))) {
+                    result -= roman_table.get(num.charAt(i));
                 }
             }
         }
