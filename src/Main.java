@@ -57,21 +57,19 @@ public class Main {
 
         if (roman) {
             num1 = toDecimal(elements[0]);
-            System.out.println("Первый - " + num1);
             num2 = toDecimal(elements[2]);
-            System.out.println("Второй - " + num2);
         }
 
         if ( (num1 > 10 || num2 > 10 || num1 < 1 || num2 < 1)) {
-            throw new IOException("На вход поданы неподходящие велечины < 0 || > 10");
+            throw new IOException("На вход подана неверная велечина < 0 || > 10");
         }
-
 
         int result;
         switch (op) {
             case 43 -> result = num1 + num2;
             case 42 -> result = num1 * num2;
             case 45 -> result = num1 - num2;
+            // Dont check for division by zero cuz working only with (0-10)
             case 47 -> result = num1 / num2;
             default -> throw new IllegalArgumentException("Unexpected value" + op);
         }
@@ -83,9 +81,12 @@ public class Main {
         }
 
         if(roman) {
-            answer = String.valueOf(result);
+            if (result < 1) {
+                throw new ArithmeticException("т.к. в римской системе нет отрицательных чисел");
+            } else {
+                answer = toRoman(result);
+            }
         }
-
         return answer;
     }
 
@@ -97,7 +98,14 @@ public class Main {
     }
 
     static int strToInt(String num){
-        return (Integer.parseInt(num));
+        int result;
+
+        try {
+            result = Integer.parseInt(num);
+        } catch (Exception e) {
+            throw new RuntimeException("Неверный ввод");
+        }
+        return result;
     }
 
     static boolean isRoman(String num) {
@@ -172,6 +180,17 @@ public class Main {
         return result;
     }
 
+    static String toRoman(int num) {
+        return "I".repeat(num)
+                .replace("IIIII","V")
+                .replace("IIII","IV")
+                .replace("VV","X")
+                .replace("VIV","IX")
+                .replace("XXXXX","L")
+                .replace("XXXX","XL")
+                .replace("LL","C")
+                .replace("LXL","XC");
+    }
 
 }
 
