@@ -1,7 +1,8 @@
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Scanner;
+
+
 
 public class Main {
     public static void main(String[] args) throws IOException {
@@ -55,9 +56,9 @@ public class Main {
         }
 
         if (roman) {
-            num1 = toRoman(elements[0]);
+            num1 = toDecimal(elements[0]);
             System.out.println("Первый - " + num1);
-            num2 = toRoman(elements[2]);
+            num2 = toDecimal(elements[2]);
             System.out.println("Второй - " + num2);
         }
 
@@ -66,7 +67,7 @@ public class Main {
         }
 
 
-        int result = 0;
+        int result;
         switch (op) {
             case 43 -> result = num1 + num2;
             case 42 -> result = num1 * num2;
@@ -75,7 +76,15 @@ public class Main {
             default -> throw new IllegalArgumentException("Unexpected value" + op);
         }
 
-        String answer = String.valueOf(result);
+        String answer = "";
+
+        if(decimal) {
+            answer = String.valueOf(result);
+        }
+
+        if(roman) {
+            answer = String.valueOf(result);
+        }
 
         return answer;
     }
@@ -125,8 +134,8 @@ public class Main {
         return result;
     }
 
-    static int toRoman(String num) {
-        HashMap<Character,Integer> roman_table = new HashMap<Character,Integer>();
+    static int toDecimal(String num) {
+        HashMap<Character,Integer> roman_table = new HashMap<>();
 
         roman_table.put('I',1);
         roman_table.put('V',5);
@@ -162,6 +171,7 @@ public class Main {
         }
         return result;
     }
+
 
 }
 
