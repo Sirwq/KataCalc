@@ -69,7 +69,7 @@ public class Main {
             case 43 -> result = num1 + num2;
             case 42 -> result = num1 * num2;
             case 45 -> result = num1 - num2;
-            // Dont check for division by zero cuz working only with (0-10)
+            //Don't check for division by zero cuz working only with (0-10)
             case 47 -> result = num1 / num2;
             default -> throw new IllegalArgumentException("Unexpected value" + op);
         }
